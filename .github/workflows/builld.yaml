@@ -1,5 +1,4 @@
 name: Build Next.js Project
-env:
 
 on:
   push:
