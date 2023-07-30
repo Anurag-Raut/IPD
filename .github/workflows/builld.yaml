@@ -1,5 +1,7 @@
 name: Build Next.js Project
-
+env:
+  VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+  VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
 on:
   push:
     branches:
@@ -24,7 +26,12 @@ jobs:
         run: yarn install
 
       - name: Build Next.js Project
-        run: yarn nextJsBuild
+        run: yarn nextbuild
+
+      - name: Deploy to Vercel
+        run: yarn vercel --prod
+        env:
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
 
     
 
