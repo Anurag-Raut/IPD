@@ -28,7 +28,7 @@
     "precommit": "lint-staged",
     "vercel": "yarn workspace @se-2/nextjs vercel",
     "vercel:yolo": "yarn workspace @se-2/nextjs vercel:yolo",
-    "nextjsBuild":"yarn workspace @se-2/nextjs yarn build"
+    "nextJsBuild":"yarn workspace @se-2/nextjs yarn build"
   },
   "packageManager": "yarn@3.2.3",
   "devDependencies": {
