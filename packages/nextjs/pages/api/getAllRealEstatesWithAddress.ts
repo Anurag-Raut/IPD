@@ -5,21 +5,18 @@ import { connectToDatabase } from '~~/servers/connect';
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
     try {
         
-        let {address}=req.body;
+        let {query}=req.body;
    
         const db=await connectToDatabase('OpenEstate_properties');
         if(!db){
             return   res.status(400).json({ error: 'not connected to db' });
         }
         const coll=db.collection('properties');
+        console.log(query);
         const documents = await coll.find({
-            owners: {
-              $elemMatch: {
-                $eq: address
-              }
-            }
+            ...query
           }).toArray();
-        console.log('documents',documents);
+        // console.log('documents',documents);
       
         res.status(200).json({ data:documents });
 

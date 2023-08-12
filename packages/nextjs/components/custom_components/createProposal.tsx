@@ -35,18 +35,7 @@ const {data:isSoleOwner}=useScaffoldContractRead({
     args:[BigInt(tokenId),address],
     watch:true
 })
-// const {data:balanceOfCurentUser}=useScaffoldContractRead({
-//     contractName:"RealEstateERC1155",
-//     functionName:'balanceOf',
-//     args:[address,BigInt(tokenId)],
-//     watch:true
-// })
-// const {data:realEstate}=useScaffoldContractRead({
-//     contractName:"RealEstateERC1155",
-//     functionName:'realEstates',
-//     args:[BigInt(tokenId)],
-//     watch:true
-// })
+
 console.log(isSoleOwner)
     
   return (

@@ -9,22 +9,26 @@ export default function MyRealEstates() {
 
 
     useEffect(() => {
-        async function fetchForomDb() {
+        async function fetchFromDb() {
             try {
-                const res = await axios.post('http://localhost:3000/api/getAllRealEstatesWithAddress', { address });
+                const res = await axios.post('http://localhost:3000/api/getAllRealEstatesWithAddress', {
+                    query: {
+                        owners: {
+                            $elemMatch: {
+                                $eq: address
+                            }
+                        }
+                    }
+                });
                 console.log(res.data.data);
                 setRealEstates(res?.data?.data);
-            }
-            catch (error) {
+            } catch (error) {
                 console.log(error);
-
             }
-
-
         }
-        fetchForomDb();
-
-    }, [])
+        fetchFromDb();
+    }, []);
+    
     return (
 
         <div className="w-full flex justify-center grid xl:grid-cols-4 lg:grid-cols-3 md:grid-cols-2 sm:grid-cols-1 gap-4 ">
