@@ -1,6 +1,8 @@
 import axios from "axios";
 import { useEffect, useState } from "react";
+import Button from "~~/components/custom_components/button";
 import Card from "~~/components/custom_components/card";
+import SubmitRentproposal from "~~/components/custom_components/submitRentProposal";
 import { RealEstate } from "~~/types/realEstate";
 import { RealEstateStatus } from "~~/utils/enums";
 
@@ -10,7 +12,7 @@ export default function AvailableForRent(){
     useEffect(() => {
         async function fetchFromDb() {
             try {
-                const res = await axios.post('http://localhost:3000/api/getAllRealEstatesWithAddress', {
+                const res = await axios.post(`${process.env.NEXT_PUBLIC_BASE_URL}/api/getAllRealEstatesWithAddress`, {
                   query:{status:RealEstateStatus.Renting}
                 });
                 console.log(res.data.data);
@@ -32,6 +34,8 @@ export default function AvailableForRent(){
                             <div>RealEstate Id : {data.tokenId}</div>
                             <div>expected Rent : {data.rentInfo.rentof1Month}</div>
                             <div> Fees for late installment : {data.rentInfo.feesForLateInstallments}</div>
+                            <SubmitRentproposal tokenId={data.tokenId}/>
+
                         </Card>
                     </div>
                     );
