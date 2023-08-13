@@ -152,6 +152,7 @@ contract RealEstateERC1155 is ERC1155 {
 	}
 
 	function updateStatus(uint256 tokenId, RealEstateStatus _status,uint256 deadline) public {
+
 		RealEstate storage realEstate = realEstates[tokenId];
 
 			if(balanceOf(msg.sender, tokenId) == realEstate.noOfTokens){
@@ -277,6 +278,7 @@ contract RealEstateERC1155 is ERC1155 {
 		uint256 deadline
 	) public {
 			RealEstate storage realEstate = realEstates[tokenId];
+			require(balanceOf(msg.sender,tokenId)>0,'not a member');
 		uint256 proposalId = proposalCounter;
 
 			proposals[proposalId].proposalId= proposalId;

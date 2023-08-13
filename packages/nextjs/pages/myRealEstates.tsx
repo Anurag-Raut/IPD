@@ -3,15 +3,17 @@ import axios from 'axios';
 import { useAccount } from "wagmi";
 import Card from "~~/components/custom_components/card";
 import Link from "next/link";
+import dotenv from 'dotenv'
+
 export default function MyRealEstates() {
     const { address } = useAccount();
     const [realEstates, setRealEstates] = useState([]);
-
+    console.log(`${process.env.NEXT_PUBLIC_BASE_URL}/api/getAllRealEstatesWithAddress`,'sdfdfdfdf');
 
     useEffect(() => {
         async function fetchFromDb() {
             try {
-                const res = await axios.post('http://localhost:3000/api/getAllRealEstatesWithAddress', {
+                const res = await axios.post(`${process.env.NEXT_PUBLIC_BASE_URL}/api/getAllRealEstatesWithAddress`, {
                     query: {
                         owners: {
                             $elemMatch: {

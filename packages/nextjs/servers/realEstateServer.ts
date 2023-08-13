@@ -5,7 +5,7 @@ import Rentinfo from '../classes/RentInfo';
 import Rentproposal from '../classes/rentProposal';
 
 async function run() {
-  console.log('hello');
+  
   
   const localhostUrl = `http://127.0.0.1:8545/`; // Update the port if needed
   const provider = new ethers.JsonRpcProvider(localhostUrl);

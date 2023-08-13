@@ -45,7 +45,6 @@ export default function ListRealEstate(){
 
     return(
         <div>
-           
             <AddressInput placeholder="enter Owner Address" value={ListDetails.owner} onChange={(prevValue)=>{setListDetails({...ListDetails,owner:prevValue})}} />
              <Input label={'InitialAmountofTokens'} value={ListDetails.initalAmountOfTokens} onChange={(prevValue)=>{setListDetails({...ListDetails,initalAmountOfTokens:Number(prevValue)})}}  type='number' />
              <Input label={'price of 1 token'} value={ListDetails.priceOf1Token} onChange={(prevValue)=>{setListDetails({...ListDetails,priceOf1Token:Number(prevValue)})}}  type='number' />
