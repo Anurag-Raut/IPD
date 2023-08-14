@@ -9,7 +9,7 @@ import { ProposalType } from "~~/utils/enums";
 
 
 
-export default function ViewProposals() {
+export default function ViewRentProposals() {
     const router = useRouter();
     const { tokenId } = router.query;
     const [proposals, setProposals] = useState<Proposal[] | null>(null);
@@ -34,7 +34,7 @@ export default function ViewProposals() {
             }
             try {
                 console.log(tokenId);
-                const result = await axios.post(`${process.env.NEXT_PUBLIC_BASE_URL}/api/getProposals`, {query:{ tokenId }});
+                const result = await axios.post(`${process.env.NEXT_PUBLIC_BASE_URL}/api/getProposals`, {query:{ tokenId:Number(tokenId),proposalType:ProposalType.setRentee }});
                 console.log(result.data);
                 setProposals(result?.data?.data)
 
@@ -81,13 +81,13 @@ export default function ViewProposals() {
                                     
 
 
-                                    data.deadline*1000 > Date.now()?
+                                    // data.deadline*1000 > Date.now()?
 
-                                    <div className="vote flex w-full justify-around">
-                                    <Button label="Upvote" onClick={() => voteFunc({args: [BigInt(data.proposalId),true]})} />
-                                    <Button label="DownVote" onClick={() => voteFunc({args: [BigInt(data.proposalId),false]})} />
-                                </div>
-                                        :
+                                //     <div className="vote flex w-full justify-around">
+                                //     <Button label="Upvote" onClick={() => voteFunc({args: [BigInt(data.proposalId),true]})} />
+                                //     <Button label="DownVote" onClick={() => voteFunc({args: [BigInt(data.proposalId),false]})} />
+                                // </div>
+                                //         :
                                         <div>
 
                                             <div>Proposal is InActive</div>

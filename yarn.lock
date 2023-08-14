@@ -4122,6 +4122,22 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@trpc/client@npm:^10.37.1":
+  version: 10.37.1
+  resolution: "@trpc/client@npm:10.37.1"
+  peerDependencies:
+    "@trpc/server": 10.37.1
+  checksum: 82fefed08717f7bf59a9013387c69a990de1d35c142519e1e8f29472cb8d16b6ce4d530d20d336e4a371993d93663e4ff7a86d1652a500a97e0632324df2e899
+  languageName: node
+  linkType: hard
+
+"@trpc/server@npm:^10.37.1":
+  version: 10.37.1
+  resolution: "@trpc/server@npm:10.37.1"
+  checksum: 0945bc60e1966f57c5944451a9a24b9d565f50e125e71369882379e6580de4ed2e2575a78c474709876d5e2e849fe0e133658c045484a230158516f59f23d7d7
+  languageName: node
+  linkType: hard
+
 "@ts-morph/common@npm:~0.11.0":
   version: 0.11.1
   resolution: "@ts-morph/common@npm:0.11.1"
@@ -16406,6 +16422,8 @@ __metadata:
   resolution: "se-2@workspace:."
   dependencies:
     "@openzeppelin/contracts": ^4.9.2
+    "@trpc/client": ^10.37.1
+    "@trpc/server": ^10.37.1
     axios: ^1.4.0
     concurrently: ^8.2.0
     dotenv: ^16.3.1

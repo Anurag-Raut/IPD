@@ -4,19 +4,21 @@ import { connectToDatabase } from '~~/servers/connect';
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
     try {
-        const {tokenId } = req.body;
+        const {query } = req.body;
 
-        const db = await connectToDatabase('OpenEstate_properties');
+        const db = await connectToDatabase('OpenEstate');
         if (!db) {
             return res.status(400).json({ error: 'not connected to db' });
         }
         const coll = db.collection('proposals');
 
-        console.log(tokenId,'tokenid')
+
      
+        console.log(query,'qqqqqqqqqqqqqqqqqqqqq');
 
-
-        const result = await coll.find({tokenId:Number(tokenId)}).toArray();
+        const result = await coll.find(
+            query
+          ).toArray();
         console.log(result);
         res.status(200).json({ data: result });
     } catch (error) {

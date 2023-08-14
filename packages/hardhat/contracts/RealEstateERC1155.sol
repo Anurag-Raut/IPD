@@ -66,6 +66,7 @@ contract RealEstateERC1155 is ERC1155 {
 		address rentee;
 		uint256 noOfMonths;
 		uint256 depositBalance;
+		uint256 rentOf1Month;
 	}
 
 	struct Proposals {
@@ -214,7 +215,8 @@ contract RealEstateERC1155 is ERC1155 {
 				proposals[proposalCounter].rentProposal=RentProposal({
 					rentee: address(0),
 					noOfMonths: 0,
-					depositBalance: 0
+					depositBalance: 0,
+					rentOf1Month:0
 				});
 				proposals[proposalCounter].rentInfo=RentInfo({
 					rentee: rentinfo.rentee,
@@ -241,7 +243,8 @@ contract RealEstateERC1155 is ERC1155 {
 				RentProposal({
 					rentee: address(0),
 					noOfMonths: 0,
-					depositBalance: 0
+					depositBalance: 0,
+					rentOf1Month:0
 				}),
 				deadline,
 				RentInfo({
@@ -292,7 +295,8 @@ contract RealEstateERC1155 is ERC1155 {
 			proposals[proposalId].rentProposal=RentProposal({
 				rentee: address(0),
 				noOfMonths: 0,
-				depositBalance: 0
+				depositBalance: 0,
+				rentOf1Month:0
 			});
 			proposals[proposalId].rentInfo=RentInfo({
 				rentee: address(0),
@@ -305,6 +309,8 @@ contract RealEstateERC1155 is ERC1155 {
 			});
 			realEstate.proposalExists[proposalId]=true;
 			proposalCounter++;
+
+			
 		
 	}
 
@@ -312,30 +318,32 @@ contract RealEstateERC1155 is ERC1155 {
 		uint256 tokenId,
 		address rentee,
 		uint256 noOfMonths,
-		uint256 deadline
+		uint256 deadline,
+		uint256 rentof1Month
 	) public payable {
 		uint256 proposalId = proposalCounter;
 		RealEstate storage realEstate = realEstates[tokenId];
 
-		require(
-			msg.value >= realEstate.rentInfo.depositAmount,
-			"deposit amount less"
-		);
+		// require(
+		// 	msg.value >= realEstate.rentInfo.depositAmount,
+		// 	"deposit amount less"
+		// );
 	
-			proposals[tokenId].proposalId=proposalId;
-			proposals[tokenId].proposalCreator=msg.sender;
-			proposals[tokenId].positiveVotes= 0;
-			proposals[tokenId].negativeVotes= 0;
-			proposals[tokenId].proposalType=ProposalType.setRentee;
-			proposals[tokenId].tokenId= tokenId;
-			proposals[tokenId].executed=false;
-			proposals[tokenId].deadline= deadline;
-			proposals[tokenId].rentProposal= RentProposal({
+			proposals[proposalId].proposalId=proposalId;
+			proposals[proposalId].positiveVotes= 0;
+			proposals[proposalId].proposalCreator=msg.sender;
+			proposals[proposalId].negativeVotes= 0;
+			proposals[proposalId].proposalType=ProposalType.setRentee;
+			proposals[proposalId].tokenId= tokenId;
+			proposals[proposalId].executed=false;
+			proposals[proposalId].deadline= deadline;
+			proposals[proposalId].rentProposal= RentProposal({
 				rentee: rentee,
 				noOfMonths: noOfMonths,
-				depositBalance: msg.value
+				depositBalance: msg.value,
+				rentOf1Month: rentof1Month
 			});
-			proposals[tokenId].rentInfo=RentInfo({
+			proposals[proposalId].rentInfo=RentInfo({
 				rentee: address(0),
 				noOfMonths: 0,
 				rentof1Month: 0,
@@ -346,6 +354,19 @@ contract RealEstateERC1155 is ERC1155 {
 			});
 				realEstate.proposalExists[proposalId]=true;
 				proposalCounter++;
+
+				emit ProposalUpserted(
+				proposalId,
+				msg.sender,
+				0,
+				0,
+				ProposalType.setRentee,
+				tokenId,
+				false,
+				proposals[proposalId].rentProposal,
+				deadline,
+				proposals[proposalId].rentInfo
+			);
 
 	}
 
@@ -389,7 +410,7 @@ contract RealEstateERC1155 is ERC1155 {
 	function executeProposal(uint256 proposalId, uint256 tokenId) public {
 		Proposals storage proposal = proposals[proposalId];
 		RealEstate storage realEstate = realEstates[tokenId];
-		require(block.timestamp <= proposal.deadline, "Proposal Expired");
+		
 		require(
 			proposal.proposalCreator != address(0),
 			"Proposal does not exist"
@@ -398,16 +419,19 @@ contract RealEstateERC1155 is ERC1155 {
 
 		bool isApproved = proposal.positiveVotes > proposal.negativeVotes;
 
-		require(isApproved, "not approved");
+		require(isApproved || isSoleOwner(tokenId, msg.sender), "not approved");
 		if (proposal.proposalType == ProposalType.ListForRent) {
+			require(block.timestamp > proposal.deadline, "deadline not passed");
 			realEstate.status = RealEstateStatus.Renting;
 		} else if (proposal.proposalType == ProposalType.UnlistForRent) {
+			require(block.timestamp > proposal.deadline, "deadline not passed");
 			realEstate.status = RealEstateStatus.Listed;
 		} else if (proposal.proposalType == ProposalType.setRentee) {
 			require(
 				realEstate.status == RealEstateStatus.Renting,
 				"not for rent"
 			);
+			require(isSoleOwner(tokenId,msg.sender) || block.timestamp > proposal.deadline, "deadline not passed");
 			realEstate.status = RealEstateStatus.Rented;
 			realEstate.rentInfo = RentInfo({
 				rentee: proposal.rentProposal.rentee,
@@ -417,35 +441,75 @@ contract RealEstateERC1155 is ERC1155 {
 				feesForLateInstallments: realEstate
 					.rentInfo
 					.feesForLateInstallments,
-				rentof1Month: realEstate.rentInfo.rentof1Month,
+				rentof1Month: proposal.rentProposal.rentOf1Month,
 				contractStartTimestamp: block.timestamp
+			});
+		}
+		else if(proposal.proposalType == ProposalType.updateRentInfo){
+			require(block.timestamp > proposal.deadline, "deadline not passed");
+				realEstate.rentInfo = RentInfo({
+				rentee: realEstate.rentInfo.rentee,
+				noOfMonths: proposal.rentInfo.noOfMonths,
+				depositAmount: proposal.rentInfo.depositAmount,
+				noOfInstallmentsPaid: 0,
+				feesForLateInstallments: proposal
+					.rentInfo
+					.feesForLateInstallments,
+				rentof1Month: proposal.rentInfo.rentof1Month,
+				contractStartTimestamp: 0
 			});
 		}
 
 		proposal.executed = true;
 	}
 
-	function payRent(uint256 tokenId) public payable {
-		RealEstate storage realEstate = realEstates[tokenId];
-		uint256 noOfMonthsRemaining = ((block.timestamp -
-			realEstate.rentInfo.contractStartTimestamp) / 30 days) % 12;
+	function requirePayment(uint256 requiredPayment) internal pure returns (string memory) {
+    return string(abi.encodePacked("Insufficient payment amount. Required payment: ", uint256ToString(requiredPayment)));
+}
 
-		uint256 fee = (noOfMonthsRemaining - 1) *
-			realEstate.rentInfo.feesForLateInstallments;
-		require(realEstate.status == RealEstateStatus.Rented);
-		require(msg.sender == realEstate.rentInfo.rentee, "You are not rentee");
-		require(
-			msg.value >= realEstate.rentInfo.rentof1Month + fee,
-			"no enough Amount"
-		);
+function uint256ToString(uint256 value) internal pure returns (string memory) {
+    if (value == 0) {
+        return "0";
+    }
 
-		for (uint256 i = 0; i < realEstate.owners.length; i++) {
-			realEstate.balanceofMemebers[realEstate.owners[i]] +=
-				(balanceOf(realEstate.owners[i], tokenId) /
-					realEstate.noOfTokens) *
-				realEstate.rentInfo.rentof1Month;
-		}
-	}
+    uint256 temp = value;
+    uint256 digits;
+
+    while (temp != 0) {
+        digits++;
+        temp /= 10;
+    }
+
+    bytes memory buffer = new bytes(digits);
+    temp = value;
+    while (temp != 0) {
+        digits -= 1;
+        buffer[digits] = bytes1(uint8(48 + temp % 10));
+        temp /= 10;
+    }
+
+    return string(buffer);
+}
+
+
+	function payRent(uint256 tokenId,uint256 currTimestamp) public payable {
+    RealEstate storage realEstate = realEstates[tokenId];
+    uint256 noOfMonthsPassed = (currTimestamp - realEstate.rentInfo.contractStartTimestamp) / (30 days);
+    uint256 noOfMonthsRemaining = noOfMonthsPassed- realEstate.rentInfo.noOfInstallmentsPaid;
+
+    uint256 fee = noOfMonthsRemaining * realEstate.rentInfo.feesForLateInstallments;
+    require(realEstate.status == RealEstateStatus.Rented, "Real estate is not rented");
+    require(msg.sender == realEstate.rentInfo.rentee, "You are not the rentee");
+require(
+    msg.value >= (realEstate.rentInfo.rentof1Month + fee), requirePayment(realEstate.rentInfo.rentof1Month + fee)
+);
+    for (uint256 i = 0; i < realEstate.owners.length; i++) {
+        uint256 ownerShare = (balanceOf(realEstate.owners[i], tokenId) * realEstate.rentInfo.rentof1Month) / realEstate.noOfTokens;
+        realEstate.balanceofMemebers[realEstate.owners[i]] += ownerShare;
+    }
+
+	realEstate.rentInfo.noOfInstallmentsPaid++;
+}
 
 	function findIndex(
 		address[] storage array,

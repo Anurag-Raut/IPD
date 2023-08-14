@@ -7,7 +7,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         console.log(req.body);
         let {data}=req.body;
    
-        const db=await connectToDatabase('OpenEstate_properties');
+        const db=await connectToDatabase('OpenEstate');
         if(!db){
             return   res.status(400).json({ error: 'not connected to db' });
         }

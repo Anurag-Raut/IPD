@@ -5,7 +5,7 @@ const contracts = {
       name: "localhost",
       contracts: {
         RealEstateERC1155: {
-          address: "0x2279B7A0a67DB372996a5FaB50D91eAA73d2eBe6",
+          address: "0x1613beB3B2C4f22Ee086B2b38C1476A3cE7f78E8",
           abi: [
             {
               inputs: [],
@@ -97,6 +97,11 @@ const contracts = {
                     {
                       internalType: "uint256",
                       name: "depositBalance",
+                      type: "uint256",
+                    },
+                    {
+                      internalType: "uint256",
+                      name: "rentOf1Month",
                       type: "uint256",
                     },
                   ],
@@ -505,6 +510,11 @@ const contracts = {
                   name: "deadline",
                   type: "uint256",
                 },
+                {
+                  internalType: "uint256",
+                  name: "rentof1Month",
+                  type: "uint256",
+                },
               ],
               name: "createRenteeProposal",
               outputs: [],
@@ -639,6 +649,11 @@ const contracts = {
                   name: "tokenId",
                   type: "uint256",
                 },
+                {
+                  internalType: "uint256",
+                  name: "currTimestamp",
+                  type: "uint256",
+                },
               ],
               name: "payRent",
               outputs: [],
@@ -718,6 +733,11 @@ const contracts = {
                     {
                       internalType: "uint256",
                       name: "depositBalance",
+                      type: "uint256",
+                    },
+                    {
+                      internalType: "uint256",
+                      name: "rentOf1Month",
                       type: "uint256",
                     },
                   ],
@@ -1089,7 +1109,7 @@ const contracts = {
           ],
         },
         YourContract: {
-          address: "0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512",
+          address: "0x8A791620dd6260079BF849Dc5567aDC3F2FdC318",
           abi: [
             {
               inputs: [
